@@ -20,6 +20,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.pras.utils.Log;
 import com.pras.utils.Utils;
@@ -372,23 +373,21 @@ public class Android_BX2 implements Resource {
 			 */
 			byte[] short_buf = new byte[2];
 			in.read(short_buf);
-			int actual_str_len = 0;
-			if(short_buf[0] == short_buf[1]) // Its repeating, happens for Non-Manifest file. e.g. 20 20
-				actual_str_len = short_buf[0];
-			else
-				actual_str_len = Utils.toInt(short_buf, false);
 			
-			byte[] str_buf = new byte[actual_str_len];
+			List<Byte> str_buf=new ArrayList<Byte>();  
 			byte[] buf = new byte[string_len - 2]; // Skip 2 Length bytes, already read.
 			in.read(buf);
 			int j = 0;
 			for(int k=0; k<buf.length; k++){
 				// Skipp 0x00
 				if(buf[k] != 0x00)
-					str_buf[j++] = buf[k];
+					str_buf.add(buf[k]);
 			}
+			byte[] str_buf2= new byte[str_buf.size()];
+			for(int s=0;s<str_buf2.length; s++)
+				str_buf2[s] = str_buf.get(s);
 			
-			stringPool.add(new String(str_buf));
+			stringPool.add(new String(str_buf2));
 		}
 		
 		Log.d(tag, "[String Pool] Size: "+ stringPool.size());
